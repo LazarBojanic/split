@@ -1,7 +1,15 @@
 -- Split research backend
 -- Run this in the Supabase SQL editor.
+--
+-- WARNING: this migration is destructive. It drops the research tables and all
+-- existing rows, then recreates the current schema from scratch. That keeps this
+-- file safe to re-run at any time and means no legacy columns or data remain.
 
-create table if not exists public.events (
+drop function if exists public.dashboard_summary();
+drop table if exists public.feedback cascade;
+drop table if exists public.events cascade;
+
+create table public.events (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   path text,
@@ -11,26 +19,27 @@ create table if not exists public.events (
   created_at timestamptz not null default now()
 );
 
-create table if not exists public.feedback (
+create table public.feedback (
   id uuid primary key default gen_random_uuid(),
   name text,
   discord text,
   level text,
+  practice_frequency text,
   current_timer text,
   perceived_speed integer check (perceived_speed between 1 and 5),
   opponent_felt_real text,
+  main_timer_intent text,
   favorite_features text[] not null default '{}',
   plan_choice text,
-  fair_price text,
   open_feedback text,
   consent boolean not null default false,
   created_at timestamptz not null default now()
 );
 
-create index if not exists events_created_at_idx on public.events (created_at desc);
-create index if not exists events_name_idx on public.events (name);
-create index if not exists events_session_idx on public.events (session_id);
-create index if not exists feedback_created_at_idx on public.feedback (created_at desc);
+create index events_created_at_idx on public.events (created_at desc);
+create index events_name_idx on public.events (name);
+create index events_session_idx on public.events (session_id);
+create index feedback_created_at_idx on public.feedback (created_at desc);
 
 alter table public.events enable row level security;
 alter table public.feedback enable row level security;
@@ -42,14 +51,12 @@ revoke all on public.feedback from anon;
 grant insert on public.events to anon;
 grant insert on public.feedback to anon;
 
-drop policy if exists "events_insert_anon" on public.events;
 create policy "events_insert_anon"
   on public.events
   for insert
   to anon
   with check (true);
 
-drop policy if exists "feedback_insert_anon" on public.feedback;
 create policy "feedback_insert_anon"
   on public.feedback
   for insert
@@ -91,6 +98,24 @@ as $$
         select level as value, count(*)::int as count
         from public.feedback
         group by level
+        order by count desc
+      ) t
+    ), '[]'::jsonb),
+    'practice_mix', coalesce((
+      select jsonb_agg(row_to_json(t))
+      from (
+        select practice_frequency as value, count(*)::int as count
+        from public.feedback
+        group by practice_frequency
+        order by count desc
+      ) t
+    ), '[]'::jsonb),
+    'main_timer_split', coalesce((
+      select jsonb_agg(row_to_json(t))
+      from (
+        select main_timer_intent as value, count(*)::int as count
+        from public.feedback
+        group by main_timer_intent
         order by count desc
       ) t
     ), '[]'::jsonb),

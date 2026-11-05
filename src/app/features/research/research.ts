@@ -179,6 +179,72 @@ import { FeedbackEntry } from '../../models/feedback.model';
           <mat-card>
             <mat-card-content class="!p-0">
               <div class="border-b border-slate-200 p-4">
+                <h2 class="text-base font-semibold text-slate-900">Practice frequency</h2>
+                <p class="text-xs text-slate-500">How often respondents practice.</p>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                  <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                    <tr>
+                      <th class="px-4 py-2">Frequency</th>
+                      <th class="px-4 py-2 text-right">Count</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100">
+                    @for (row of s.practiceMix; track row.value) {
+                      <tr>
+                        <td class="px-4 py-2">{{ row.value || '—' }}</td>
+                        <td class="px-4 py-2 text-right font-semibold">{{ row.count }}</td>
+                      </tr>
+                    } @empty {
+                      <tr>
+                        <td colspan="2" class="px-4 py-6 text-center text-slate-500">
+                          No feedback yet.
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card>
+            <mat-card-content class="!p-0">
+              <div class="border-b border-slate-200 p-4">
+                <h2 class="text-base font-semibold text-slate-900">Main timer intent</h2>
+                <p class="text-xs text-slate-500">Would they use Split as their main timer?</p>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                  <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                    <tr>
+                      <th class="px-4 py-2">Answer</th>
+                      <th class="px-4 py-2 text-right">Count</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100">
+                    @for (row of s.mainTimerSplit; track row.value) {
+                      <tr>
+                        <td class="px-4 py-2">{{ row.value || '—' }}</td>
+                        <td class="px-4 py-2 text-right font-semibold">{{ row.count }}</td>
+                      </tr>
+                    } @empty {
+                      <tr>
+                        <td colspan="2" class="px-4 py-6 text-center text-slate-500">
+                          No feedback yet.
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card>
+            <mat-card-content class="!p-0">
+              <div class="border-b border-slate-200 p-4">
                 <h2 class="text-base font-semibold text-slate-900">Opponent realism</h2>
                 <p class="text-xs text-slate-500">
                   Did the Wizard-of-Oz opponent feel real?
@@ -308,6 +374,8 @@ export class ResearchComponent implements OnInit {
       eventCounts: this.analytics.eventCounts(),
       planMix: this.countBy(entries, (entry) => entry.planChoice),
       levelMix: this.countBy(entries, (entry) => entry.level),
+      practiceMix: this.countBy(entries, (entry) => entry.practiceFrequency),
+      mainTimerSplit: this.countBy(entries, (entry) => entry.mainTimerIntent),
       opponentRealSplit: this.countBy(entries, (entry) => entry.opponentFeltReal),
       averageSpeed: entries.length
         ? Math.round(

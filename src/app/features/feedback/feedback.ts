@@ -14,7 +14,22 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FeedbackService } from '../../services/feedback.service';
 import { IdentityService } from '../../services/identity.service';
 import { AnalyticsService } from '../../services/analytics.service';
-import { CubingLevel, PlanChoice } from '../../models/feedback.model';
+import {
+  CubingLevel,
+  MainTimerIntent,
+  PlanChoice,
+  PracticeFrequency,
+} from '../../models/feedback.model';
+
+interface Plan {
+  id: PlanChoice;
+  name: string;
+  price: string;
+  period: string;
+  description: string;
+  features: string[];
+  note?: string;
+}
 
 @Component({
   selector: 'app-feedback',
@@ -103,6 +118,15 @@ import { CubingLevel, PlanChoice } from '../../models/feedback.model';
                   </mat-select>
                 </mat-form-field>
                 <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>How often do you practice?</mat-label>
+                  <mat-select [(ngModel)]="practiceFrequency" name="practiceFrequency">
+                    <mat-option value="daily">Daily</mat-option>
+                    <mat-option value="few-times-a-week">A few times a week</mat-option>
+                    <mat-option value="weekly">About once a week</mat-option>
+                    <mat-option value="less">Less often</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="w-full">
                   <mat-label>Current timer(s)</mat-label>
                   <input matInput [(ngModel)]="currentTimer" name="currentTimer" placeholder="csTimer, CubeDesk, phone..." />
                 </mat-form-field>
@@ -139,6 +163,17 @@ import { CubingLevel, PlanChoice } from '../../models/feedback.model';
               </div>
 
               <div class="mt-5">
+                <p class="text-sm font-medium text-slate-800">
+                  Would you use Split as your main timer?
+                </p>
+                <mat-radio-group [(ngModel)]="mainTimerIntent" name="mainTimerIntent" class="mt-2 flex flex-wrap gap-4">
+                  <mat-radio-button value="yes">Yes</mat-radio-button>
+                  <mat-radio-button value="maybe">Maybe</mat-radio-button>
+                  <mat-radio-button value="no">No</mat-radio-button>
+                </mat-radio-group>
+              </div>
+
+              <div class="mt-5">
                 <p class="text-sm font-medium text-slate-800">Which features matter most? (choose up to 3)</p>
                 <div class="mt-2 grid gap-2 sm:grid-cols-2">
                   @for (feature of featureOptions; track feature) {
@@ -158,19 +193,50 @@ import { CubingLevel, PlanChoice } from '../../models/feedback.model';
             <mat-card-content>
               <h2 class="text-base font-semibold text-slate-900">Pricing question</h2>
               <p class="mt-1 text-sm text-slate-500">
-                No payment is collected. This is only a question.
+                Look at the plans and tell us which one you would honestly pick. There is no
+                checkout and no payment.
               </p>
-              <mat-radio-group [(ngModel)]="planChoice" name="planChoice" class="mt-3 grid gap-2 sm:grid-cols-2">
-                <mat-radio-button value="free">Free</mat-radio-button>
-                <mat-radio-button value="supporter">Supporter — $2/month</mat-radio-button>
-                <mat-radio-button value="patron">Patron — $10/month</mat-radio-button>
-                <mat-radio-button value="undecided">I would not pay</mat-radio-button>
+              <mat-radio-group
+                [(ngModel)]="planChoice"
+                name="planChoice"
+                class="mt-4 grid gap-4 md:grid-cols-3"
+              >
+                @for (plan of plans; track plan.id) {
+                  <mat-card
+                    class="cursor-pointer transition-shadow hover:shadow-md"
+                    [class.ring-2]="planChoice === plan.id"
+                    [class.ring-indigo-600]="planChoice === plan.id"
+                    (click)="planChoice = plan.id"
+                  >
+                    <mat-card-content>
+                      <div class="flex items-center justify-between gap-2">
+                        <mat-radio-button [value]="plan.id">{{ plan.name }}</mat-radio-button>
+                        @if (plan.id === 'supporter') {
+                          <mat-chip-set><mat-chip highlighted>most likely</mat-chip></mat-chip-set>
+                        }
+                      </div>
+                      <p class="mt-3 text-3xl font-bold text-slate-900">
+                        {{ plan.price }}
+                        <span class="text-sm font-normal text-slate-500">{{ plan.period }}</span>
+                      </p>
+                      <p class="mt-2 text-sm leading-relaxed text-slate-600">
+                        {{ plan.description }}
+                      </p>
+                      <ul class="mt-4 space-y-2 text-sm text-slate-700">
+                        @for (item of plan.features; track item) {
+                          <li class="flex items-start gap-2">
+                            <mat-icon class="mt-0.5 text-base text-indigo-700">check</mat-icon>
+                            <span>{{ item }}</span>
+                          </li>
+                        }
+                      </ul>
+                      @if (plan.note) {
+                        <p class="mt-3 text-xs text-slate-500">{{ plan.note }}</p>
+                      }
+                    </mat-card-content>
+                  </mat-card>
+                }
               </mat-radio-group>
-
-              <mat-form-field appearance="outline" class="mt-4 w-full">
-                <mat-label>What would feel like a fair price?</mat-label>
-                <input matInput [(ngModel)]="fairPrice" name="fairPrice" placeholder="Free, $1–2, $3–5, donation..." />
-              </mat-form-field>
             </mat-card-content>
           </mat-card>
 
@@ -217,12 +283,13 @@ export class FeedbackComponent implements OnInit {
   name = this.identity.name();
   discord = '';
   level: CubingLevel = 'sub-20';
+  practiceFrequency: PracticeFrequency = 'few-times-a-week';
   currentTimer = '';
   perceivedSpeed = 4;
   opponentFeltReal: 'yes' | 'no' | 'unsure' = 'unsure';
+  mainTimerIntent: MainTimerIntent = 'maybe';
   favoriteFeatures: string[] = ['Live races'];
-  planChoice: PlanChoice = 'undecided';
-  fairPrice = '';
+  planChoice: PlanChoice = 'free';
   openFeedback = '';
   consent = false;
 
@@ -237,10 +304,54 @@ export class FeedbackComponent implements OnInit {
     'Profile flair',
   ];
 
+  readonly plans: Plan[] = [
+    {
+      id: 'free',
+      name: 'Free',
+      price: '$0',
+      period: 'forever',
+      description: 'Everything a casual or competitive cuber needs to time and race.',
+      features: [
+        'Solo timer and scrambles',
+        'Basic stats (best, mean, ao5, ao12)',
+        'Anonymous live races',
+        'Public leaderboard',
+      ],
+    },
+    {
+      id: 'supporter',
+      name: 'Supporter',
+      price: '$2',
+      period: 'per month',
+      description: 'A small optional tip for people who use it every day.',
+      features: [
+        'Everything in Free',
+        'Profile flair and a custom name',
+        'Advanced stats and match history',
+        'Private room links',
+      ],
+      note: 'This is the plan we expect most paying cubers to pick.',
+    },
+    {
+      id: 'patron',
+      name: 'Patron',
+      price: '$10',
+      period: 'per month',
+      description: 'For server owners and people who really want to support development.',
+      features: [
+        'Everything in Supporter',
+        'Server leaderboard and admin tools',
+        'Tournament/bracket tools',
+        'Early access to hardware integrations',
+      ],
+      note: 'Probably not for a normal cuber. That is what the test is for.',
+    },
+  ];
+
   ngOnInit(): void {
     this.analytics.track('feedback_page_view');
     const plan = this.route.snapshot.queryParamMap.get('plan');
-    if (plan === 'free' || plan === 'supporter' || plan === 'patron' || plan === 'undecided') {
+    if (plan === 'free' || plan === 'supporter' || plan === 'patron') {
       this.planChoice = plan;
     }
   }
@@ -265,12 +376,13 @@ export class FeedbackComponent implements OnInit {
       name: this.name.trim() || this.identity.name(),
       discord: this.discord.trim(),
       level: this.level,
+      practiceFrequency: this.practiceFrequency,
       currentTimer: this.currentTimer.trim(),
       perceivedSpeed: this.perceivedSpeed,
       opponentFeltReal: this.opponentFeltReal,
+      mainTimerIntent: this.mainTimerIntent,
       favoriteFeatures: [...this.favoriteFeatures],
       planChoice: this.planChoice,
-      fairPrice: this.fairPrice.trim(),
       openFeedback: this.openFeedback.trim(),
       consent: true,
     });

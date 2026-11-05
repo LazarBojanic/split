@@ -23,6 +23,8 @@ export interface DashboardSummary {
   eventCounts: EventCountRow[];
   planMix: CountRow[];
   levelMix: CountRow[];
+  practiceMix: CountRow[];
+  mainTimerSplit: CountRow[];
   opponentRealSplit: CountRow[];
   averageSpeed: number | null;
   topFeatures: FeatureCountRow[];
@@ -45,6 +47,8 @@ export class DashboardService {
       eventCounts: (raw['event_counts'] as EventCountRow[]) ?? [],
       planMix: (raw['plan_mix'] as CountRow[]) ?? [],
       levelMix: (raw['level_mix'] as CountRow[]) ?? [],
+      practiceMix: (raw['practice_mix'] as CountRow[]) ?? [],
+      mainTimerSplit: (raw['main_timer_split'] as CountRow[]) ?? [],
       opponentRealSplit: (raw['opponent_real_split'] as CountRow[]) ?? [],
       averageSpeed:
         raw['average_speed'] === null || raw['average_speed'] === undefined

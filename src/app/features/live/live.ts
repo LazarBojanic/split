@@ -322,9 +322,9 @@ import { formatMs } from '../../utils/time';
                       before building real-time multiplayer.
                     </p>
                     <p class="mt-2">
-                      Did it feel real? Did you notice you never had to log in? Tell us in
-                      the <a routerLink="/feedback" class="font-semibold underline">anonymous website form</a>.
-                      It takes about 2 minutes and needs no login.
+                      Did it feel real? Tell us in the
+                      <a routerLink="/feedback" class="font-semibold underline">anonymous website form</a>.
+                      It takes about 2 minutes.
                     </p>
                   </div>
                 }
