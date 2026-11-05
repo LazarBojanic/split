@@ -61,7 +61,7 @@ import { formatMs } from '../../utils/time';
                   Find a match
                 </button>
                 <p class="mt-4 text-xs text-slate-400">
-                  Research prototype. The race is a Wizard-of-Oz test, not production multiplayer yet.
+                  Research prototype. Live races are not production multiplayer yet.
                 </p>
               </div>
             }
@@ -353,7 +353,7 @@ import { formatMs } from '../../utils/time';
           <mat-card-content class="!p-4">
             <mat-icon class="text-indigo-700">science</mat-icon>
             <p class="mt-2 text-sm font-semibold text-slate-900">Research prototype</p>
-            <p class="text-xs text-slate-500">The race is a Wizard-of-Oz test, not production multiplayer yet.</p>
+            <p class="text-xs text-slate-500">Live races are still a research prototype, not production multiplayer yet.</p>
           </mat-card-content>
         </mat-card>
       </div>

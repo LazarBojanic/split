@@ -247,7 +247,7 @@ import { FeedbackEntry } from '../../models/feedback.model';
               <div class="border-b border-slate-200 p-4">
                 <h2 class="text-base font-semibold text-slate-900">Opponent realism</h2>
                 <p class="text-xs text-slate-500">
-                  Did the Wizard-of-Oz opponent feel real?
+                  Self-reported realism of the opponent.
                 </p>
               </div>
               <div class="p-4">
