@@ -1,0 +1,70 @@
+<div class="flex min-h-screen flex-col">
+<mat-toolbar color="primary" class="shadow-sm">
+  <div class="mx-auto flex w-full max-w-6xl items-center justify-between gap-3">
+    <div class="flex min-w-0 items-center gap-5">
+      <a
+        routerLink="/"
+        class="flex shrink-0 items-center gap-2 font-bold text-lg no-underline text-white"
+      >
+        <mat-icon>timer</mat-icon>
+        <span>Split</span>
+      </a>
+      <nav class="hidden items-center gap-1 sm:flex">
+        <a mat-button routerLink="/timer" routerLinkActive="bg-white/20" class="flex items-center gap-1.5">
+          <mat-icon class="text-sm">av_timer</mat-icon>
+          <span>Timer</span>
+        </a>
+        <a mat-button routerLink="/live" routerLinkActive="bg-white/20" class="flex items-center gap-1.5">
+          <mat-icon class="text-sm">bolt</mat-icon>
+          <span>Live Race</span>
+        </a>
+        <a mat-button routerLink="/leaderboard" routerLinkActive="bg-white/20" class="flex items-center gap-1.5">
+          <mat-icon class="text-sm">leaderboard</mat-icon>
+          <span>Leaderboard</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="flex shrink-0 items-center gap-2">
+      <mat-chip-set class="hidden md:block">
+        <mat-chip class="!text-white !border-white/40">anonymous</mat-chip>
+      </mat-chip-set>
+      <a
+        mat-stroked-button
+        routerLink="/timer"
+        class="!text-white !border-white/50"
+      >
+        <mat-icon>play_arrow</mat-icon>
+        <span class="hidden sm:inline">Start timing</span>
+      </a>
+    </div>
+  </div>
+</mat-toolbar>
+
+<main class="mx-auto w-full max-w-6xl flex-1 p-4 sm:p-6">
+  <router-outlet />
+</main>
+
+<footer class="border-t border-slate-200 bg-white">
+  <div class="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-5 sm:px-6">
+    <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+      <p class="text-sm text-slate-500">
+        <span class="font-semibold text-slate-800">Split</span> · a student research prototype.
+      </p>
+      <nav class="flex flex-wrap gap-4 text-sm">
+        <a routerLink="/timer" class="text-slate-600 no-underline hover:text-indigo-700">Timer</a>
+        <a routerLink="/live" class="text-slate-600 no-underline hover:text-indigo-700">Live race</a>
+        <a routerLink="/leaderboard" class="text-slate-600 no-underline hover:text-indigo-700">Leaderboard</a>
+        <a routerLink="/feedback" class="text-slate-600 no-underline hover:text-indigo-700">Feedback</a>
+        <a routerLink="/research" class="text-slate-600 no-underline hover:text-indigo-700">Research data</a>
+        <a routerLink="/privacy" class="text-slate-600 no-underline hover:text-indigo-700">Privacy</a>
+      </nav>
+    </div>
+    <p class="text-xs leading-relaxed text-slate-400">
+      We collect anonymous usage events (page views, timer and race actions) and optional
+      feedback. No login. No cookies. Our analytics tables do not store IP addresses.
+      <a routerLink="/privacy" class="text-slate-500 underline">Read the privacy note</a>.
+    </p>
+  </div>
+</footer>
+</div>
